@@ -5,20 +5,8 @@ on:
   schedule:
     - cron: '0 13 * * 4'
 
-  # Manual trigger with title and scripture inputs
+  # Manual trigger — no inputs needed, reads from email automatically
   workflow_dispatch:
-    inputs:
-      title:
-        description: 'Message title'
-        required: true
-      scripture:
-        description: 'Scripture reference'
-        required: true
-
-# Edit these each week for the scheduled Thursday run
-env:
-  DEFAULT_TITLE: 'Message Title'
-  DEFAULT_SCRIPTURE: 'Book 0:0'
 
 jobs:
   update:
@@ -33,17 +21,16 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Update message
-        run: |
-          TITLE="${{ github.event.inputs.title || env.DEFAULT_TITLE }}"
-          SCRIPTURE="${{ github.event.inputs.scripture || env.DEFAULT_SCRIPTURE }}"
-          python3 update_message.py "$TITLE" "$SCRIPTURE"
-          echo "MSG_TITLE=$TITLE" >> $GITHUB_ENV
+      - name: Update message from email
+        env:
+          GMAIL_USER: ${{ secrets.GMAIL_USER }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+        run: python3 update_message.py
 
       - name: Commit and push
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add index.html
-          git diff --staged --quiet || git commit -m "Update Sunday message: $MSG_TITLE"
+          git diff --staged --quiet || git commit -m "Update Sunday message from email"
           git push
