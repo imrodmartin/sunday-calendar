@@ -39,6 +39,8 @@ def find_doc(drive, folder_id, doc_name):
             " and trashed=false"
         ),
         fields="files(id,name)",
+        includeItemsFromAllDrives=True,
+        supportsAllDrives=True,
     ).execute()
     files = results.get("files", [])
     if not files:
