@@ -32,6 +32,18 @@ def build_drive_service():
 
 def find_doc(drive, folder_id, doc_name):
     safe_name = doc_name.replace("'", "\\'")
+
+    # Debug: list all files the service account can see
+    all_files = drive.files().list(
+        fields="files(id,name,mimeType,parents)",
+        includeItemsFromAllDrives=True,
+        supportsAllDrives=True,
+        pageSize=50,
+    ).execute()
+    print("All visible files:")
+    for f in all_files.get("files", []):
+        print(f"  {f['name']} ({f['mimeType']}) parents={f.get('parents')}")
+
     results = drive.files().list(
         q=(
             f"name='{safe_name}' and '{folder_id}' in parents"
