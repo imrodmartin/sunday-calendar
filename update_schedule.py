@@ -32,18 +32,6 @@ def build_drive_service():
 
 def find_doc(drive, folder_id, doc_name):
     safe_name = doc_name.replace("'", "\\'")
-
-    # Debug: list all files the service account can see
-    all_files = drive.files().list(
-        fields="files(id,name,mimeType,parents)",
-        includeItemsFromAllDrives=True,
-        supportsAllDrives=True,
-        pageSize=50,
-    ).execute()
-    print("All visible files:")
-    for f in all_files.get("files", []):
-        print(f"  {f['name']} ({f['mimeType']}) parents={f.get('parents')}")
-
     results = drive.files().list(
         q=(
             f"name='{safe_name}' and '{folder_id}' in parents"
@@ -72,16 +60,17 @@ def parse_happenings(text):
     section = match.group(1)
 
     schedule = []
-    for day in DAYS:
-        day_match = re.search(rf"{day}\s*[-–—]\s*(.*)$", section, re.MULTILINE)
-        if not day_match:
-            continue
-        events_text = day_match.group(1).strip()
-        if not events_text:
-            continue
-        events = [e.strip() for e in re.split(r"\s{2,}", events_text) if e.strip()]
-        if events:
-            schedule.append((day, events))
+    for line in section.splitlines():
+        line = line.strip()
+        for day in DAYS:
+            m = re.match(rf"^{day}\s*[-–—]\s*(.*)$", line, re.IGNORECASE)
+            if m:
+                events_text = m.group(1).strip()
+                if events_text:
+                    events = [e.strip() for e in re.split(r"\s{2,}", events_text) if e.strip()]
+                    if events:
+                        schedule.append((day, events))
+                break
     return schedule
 
 
