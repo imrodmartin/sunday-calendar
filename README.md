@@ -1,6 +1,6 @@
-# Sunday Message
+# Sunday Calendar
 
-A simple weekly slide that displays the sermon title and scripture for the week.
+A simple weekly slide that displays the upcoming events
 
 ## Setup
 
@@ -9,12 +9,10 @@ A simple weekly slide that displays the sermon title and scripture for the week.
 
 ## How It Works
 
-Every Friday, an automated task searches Gmail for an email from Bill Secrest
-with the subject "Scripture and Title", extracts the title and scripture, and
-updates `index.html` with the new content.
+Every Friday, an automated task searches this weeks bulletin and grabs the events
 
 ## Deploying with GitHub Pages
 
 1. Go to **Settings → Pages**
 2. Set **Source** to `Deploy from a branch` → `main` → `/ (root)`
-3. Your page will be live at `https://imrodmartin.github.io/sunday-message/`
+3. Your page will be live at `https://imrodmartin.github.io/sunday-calendar/`
