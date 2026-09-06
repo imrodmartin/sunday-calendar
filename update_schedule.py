@@ -54,16 +54,18 @@ def export_as_text(drive, file_id):
 
 
 def parse_happenings(text):
-    match = re.search(r"Current Happenings(.*?)(?:\n\s*\n|\Z)", text, re.DOTALL | re.IGNORECASE)
+    # Heading: "Current Happenings" or "Current & Upcoming Ministry Happenings" (any words between).
+    # Day entries are separated by blank lines, so run until the MONTHLY section (or end of doc).
+    match = re.search(r"Current[^\n]*Happenings(.*?)(?:^\s*MONTHLY\s*$|\Z)", text, re.DOTALL | re.IGNORECASE | re.MULTILINE)
     if not match:
-        raise ValueError("'Current Happenings' section not found in document")
+        raise ValueError("'Current ... Happenings' section not found in document")
     section = match.group(1)
 
     schedule = []
     for line in section.splitlines():
         line = line.strip()
         for day in DAYS:
-            m = re.match(rf"^{day}\s*[-–—]\s*(.*)$", line, re.IGNORECASE)
+            m = re.match(rf"^{day}\s*[-–—:]\s*(.*)$", line, re.IGNORECASE)
             if m:
                 events_text = m.group(1).strip()
                 if events_text:
