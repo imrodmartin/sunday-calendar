@@ -5,6 +5,7 @@ Finds the Google Doc named for the upcoming Sunday (e.g. "May 10, 2026"),
 parses the Current Happenings section, and updates the schedule in index.html.
 Requires env vars: GOOGLE_CREDENTIALS (service account JSON), GOOGLE_DRIVE_FOLDER_ID
 """
+import html
 import json
 import os
 import re
@@ -79,7 +80,7 @@ def parse_happenings(text):
 def build_schedule_html(schedule):
     rows = []
     for day, events in schedule:
-        event_divs = "\n          ".join(f'<div class="event">{e}</div>' for e in events)
+        event_divs = "\n          ".join(f'<div class="event">{html.escape(e)}</div>' for e in events)
         rows.append(
             f'      <div class="schedule-row">\n'
             f'        <div class="day">{day}</div>\n'

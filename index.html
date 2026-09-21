@@ -22,76 +22,66 @@
       background: #000;
     }
 
-    .bg {
-      position: fixed;
-      inset: 0;
-      background-image: url('desktop-calendar.png');
-      background-size: cover;
-      background-position: center center;
-      background-repeat: no-repeat;
+    body {
+      display: grid;
+      place-items: center;
     }
 
-    .bg::after {
+    /* 16:9 stage matching the background image; everything inside scales with it */
+    .stage {
+      position: relative;
+      width: min(100vw, 177.78vh);
+      aspect-ratio: 16 / 9;
+      container-type: size;
+      background: url('desktop-calendar.png') center / cover no-repeat;
+    }
+
+    .stage::after {
       content: '';
       position: absolute;
       inset: 0;
-      background: linear-gradient(
-        to bottom,
-        transparent 40%,
-        rgba(0, 0, 0, 0.45) 100%
-      );
+      background: linear-gradient(to bottom, transparent 40%, rgba(0, 0, 0, 0.45) 100%);
     }
 
-    .content {
-      position: fixed;
-      top: 450px;
-      left: 110px;
-      right: 60px;
-      transform: translateY(-50%);
-      z-index: 10;
-      color: #ffffff;
-    }
-
+    /* Area below the "THIS WEEK AT FIRST BAPTIST" title baked into the image */
     .schedule {
+      position: absolute;
+      top: 25%;
+      bottom: 5%;
+      left: 7%;
+      right: 5%;
+      z-index: 1;
       display: flex;
       flex-direction: column;
-      gap: 24px;
-      font-family: 'Inter', Arial Black, Helvetica Neue, sans-serif;
+      justify-content: center;
+      gap: 0.6em;
+      overflow: hidden;
+      color: #fff;
+      font-family: 'Inter', 'Arial Black', 'Helvetica Neue', sans-serif;
+      font-size: 3.4cqw;
+      line-height: 1.15;
       -webkit-font-smoothing: antialiased;
-      text-rendering: optimizeLegibility;
+      text-shadow: 0 0.05em 0.2em rgba(0, 0, 0, 0.6);
     }
 
     .schedule-row {
-      display: flex;
-      align-items: flex-start;
+      display: grid;
+      grid-template-columns: 6.2em 1fr;
+      column-gap: 0.6em;
     }
 
     .day {
-      font-size: 56px;
       font-weight: 900;
-      line-height: 1.15;
-      min-width: 480px;
-      flex-shrink: 0;
-    }
-
-    .events {
-      display: flex;
-      flex-direction: column;
-      gap: 0;
     }
 
     .event {
-      font-size: 56px;
       font-weight: 700;
-      line-height: 1.15;
     }
   </style>
 </head>
 <body>
-  <div class="bg"></div>
-  <div class="content">
+  <div class="stage">
     <div class="schedule">
-
 <!-- SCHEDULE_START -->
       <div class="schedule-row">
         <div class="day">Monday</div>
@@ -99,36 +89,49 @@
           <div class="event">6:30 pm Small Group with Stan @ the Jacksons</div>
         </div>
       </div>
-   <div class="schedule-row">
+
+      <div class="schedule-row">
         <div class="day">Tuesday</div>
         <div class="events">
           <div class="event">11:00 am Small Group with Sandy @ FBC</div>
         </div>
-      </div>      
+      </div>
 
       <div class="schedule-row">
         <div class="day">Wednesday</div>
         <div class="events">
           <div class="event">10:30 am Bible Study</div>
           <div class="event">6:30 pm Small Group with Pastor @ FBC</div>
-
         </div>
       </div>
-        <div class="schedule-row">
+
+      <div class="schedule-row">
         <div class="day">Thursday</div>
         <div class="events">
-          <div class="event"> 6:00 pm Small Group with Pat & Sandy @ the McClanahans</div>
+          <div class="event">6:00 pm Small Group with Pat &amp; Sandy @ the McClanahans</div>
         </div>
-      </div>    
-           <div class="schedule-row">
+      </div>
+
+      <div class="schedule-row">
         <div class="day">Friday</div>
         <div class="events">
-          <div class="event"> 6:00 pm Game Night</div>
+          <div class="event">6:00 pm Game Night</div>
         </div>
-      </div>    
+      </div>
 <!-- SCHEDULE_END -->
-
     </div>
   </div>
+  <script>
+    // Busy weeks: shrink text until the schedule fits below the title.
+    // Sizes are in cqw, so one fit holds at every screen size.
+    document.fonts.ready.then(() => {
+      const s = document.querySelector('.schedule');
+      let size = 3.4;
+      while (s.scrollHeight > s.clientHeight && size > 1.5) {
+        size -= 0.1;
+        s.style.fontSize = size + 'cqw';
+      }
+    });
+  </script>
 </body>
 </html>
